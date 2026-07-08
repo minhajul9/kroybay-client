@@ -44,7 +44,7 @@ export default function SearchBar() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="p-3 bg-black border-white"
+        className="p-3 "
       />
       <Button
         onClick={handleSearch}

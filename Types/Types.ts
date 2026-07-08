@@ -47,3 +47,26 @@ export type SubCategory = {
   categoryId: number;
   category: CategoryType;
 };
+
+export type Product = {
+  id: string;
+  name: string;
+  slug: string;
+  thumbnail: string;
+  basePrice: number;
+  discountType?: string;
+  discountValue?: number;
+  expiresAt: string
+};
+
+
+export type BannerType = {
+  id: string;
+  image: string;
+  link?: string;
+  title: string;
+  slug: string;
+  isActive: boolean;
+  createdById: string;
+  updatedById: string;
+};
