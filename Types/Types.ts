@@ -48,16 +48,100 @@ export type SubCategory = {
   category: CategoryType;
 };
 
-export type Product = {
+export type BrandType = {
+  id: string;
+  name: string;
+  logo: string;
+  slug: string;
+  website: string;
+  description: string;
+  isDeleted: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ProductOptionType = {
   id: string;
   name: string;
   slug: string;
-  thumbnail: string;
-  basePrice: number;
-  discountType?: string;
-  discountValue?: number;
-  expiresAt: string
+  isDeleted: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  values: ProductOptionValue[]
 };
+
+export type ProductVariantType = {
+  images: ProductImageType[];
+  id: string
+  sku: string
+  costPriceOverride: number
+  priceOverride: number
+  stock: number
+  weight: number
+  createdAt: string
+  isActive: boolean
+  options: ProductOptionValue[]
+  productId: string
+  updatedAt: string
+}
+
+export type ProductOptionValue = {
+  id: string;
+  optionTypeId: string;
+  optionType: ProductOptionType;
+  value: string;
+  slug: string;
+  hexColor?: string;
+  createdAt: string;
+  updatedAt: string;
+  optionValueId: string;
+}
+
+
+export type ProductImageType = {
+  id: string;
+  url: string;
+}
+
+// export type Product = {
+//   id: string;
+//   name: string;
+//   slug: string;
+//   thumbnail: string;
+//   basePrice: number;
+//   discountType?: string;
+//   discountValue?: number;
+//   expiresAt: string;
+//   images: ProductImageType[];
+// };
+
+export type Product = {
+  id: string;
+  images: ProductImageType[];
+  thumbnail: string;
+  name: string;
+  slug: string;
+  description: string;
+  isActive: boolean;
+  isFeatured: boolean;
+  discountType: string;
+  discountValue: string | number;
+  categoryId: string;
+  category: CategoryType;
+  subCategoryId: string;
+  subCategory: SubCategory;
+  brandId?: string;
+  brand?: BrandType;
+  basePrice: number;
+  costPrice: number;
+  createdAt: string;
+  updatedAt: string;
+  optionTypes: ProductOptionType[];
+  totalStock: number;
+};
+
 
 
 export type BannerType = {

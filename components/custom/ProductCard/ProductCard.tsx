@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Product } from "@/Types/Types";
+import ProductPrice from "../ProductPrice/ProductPrice";
 // import AddToCart from "../AddToCart/AddToCart";
 // import ProductPrice from "../ProductPrice/ProductPrice";
 
@@ -32,17 +33,15 @@ const ProductCard = ({ product }: { product: Product }) => {
                         <h2 className="text-base font-bold mb-1 px-1">{product.name}</h2>
 
                         <div className="flex justify-center mb-2 px-1">
-                            {/* <ProductPrice product={product} /> */}
+                            {/* <p className="text-md font-semibold text-[#5d5b5b]">
+                                {product.basePrice}<span className="bangla-font font-semibold">৳</span>
+                            </p> */}
+                            <ProductPrice product={product} align="center" />
                         </div>
                     </div>
                 </Link>
 
-                {/* <AddToCart
-          id={product.id}
-          type="product"
-          count={1}
-          slug={product.slug}
-        /> */}
+                
             </CardContent>
         </Card>
     );
