@@ -3,11 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Product } from "@/Types/Types";
-import ProductPrice from "../ProductPrice/ProductPrice";
-// import AddToCart from "../AddToCart/AddToCart";
-// import ProductPrice from "../ProductPrice/ProductPrice";
+import { calculatePrice } from "@/lib/calculatePrice";
 
 const ProductCard = ({ product }: { product: Product }) => {
+
+    const {price, hasDiscount} = calculatePrice(product.basePrice, product.discountType, product.discountValue)
     return (
         <Card key={product.id} className="h-full py-0 rounded-sm">
             <CardContent className="h-full flex flex-col p-0">
@@ -36,12 +36,33 @@ const ProductCard = ({ product }: { product: Product }) => {
                             {/* <p className="text-md font-semibold text-[#5d5b5b]">
                                 {product.basePrice}<span className="bangla-font font-semibold">৳</span>
                             </p> */}
-                            <ProductPrice product={product} align="center" />
+                            <div>
+                                <p className="font-semibold text-[#5d5b5b]">
+                                    {hasDiscount ? (
+                                        <span className="gap-2">
+                                            <span className=" text-muted-foreground line-through opacity-45">
+                                                <span className="font-semibold">৳</span>
+                                                {product.basePrice}
+                                            </span>
+                                            {" "}
+                                            <span className="font-semibold">
+                                                <span className="font-semibold">৳</span>
+                                                {price}
+                                            </span>
+                                        </span>
+                                    ) : (
+                                        <span>
+                                            <span className="font-semibold">৳</span>
+                                            {price}
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </Link>
 
-                
+
             </CardContent>
         </Card>
     );

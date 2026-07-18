@@ -45,7 +45,7 @@ export type SubCategory = {
   slug: string;
   image: string;
   categoryId: number;
-  category: CategoryType;
+  parent: CategoryType;
 };
 
 export type BrandType = {
@@ -105,17 +105,6 @@ export type ProductImageType = {
   url: string;
 }
 
-// export type Product = {
-//   id: string;
-//   name: string;
-//   slug: string;
-//   thumbnail: string;
-//   basePrice: number;
-//   discountType?: string;
-//   discountValue?: number;
-//   expiresAt: string;
-//   images: ProductImageType[];
-// };
 
 export type Product = {
   id: string;
@@ -129,9 +118,7 @@ export type Product = {
   discountType: string;
   discountValue: string | number;
   categoryId: string;
-  category: CategoryType;
-  subCategoryId: string;
-  subCategory: SubCategory;
+  category: SubCategory;
   brandId?: string;
   brand?: BrandType;
   basePrice: number;
@@ -140,6 +127,7 @@ export type Product = {
   updatedAt: string;
   optionTypes: ProductOptionType[];
   totalStock: number;
+  variants: ProductVariantType[];
 };
 
 
