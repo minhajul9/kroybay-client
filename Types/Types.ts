@@ -103,6 +103,10 @@ export type ProductOptionValue = {
 export type ProductImageType = {
   id: string;
   url: string;
+  altText: string;
+  isPrimary: boolean;
+  productId: string;
+  variantId?: string;
 }
 
 

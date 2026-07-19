@@ -9,14 +9,18 @@ import {
     type CarouselApi,
 } from "@/components/ui/carousel";
 import Image from "next/image";
+import { useVariant } from "@/Provider/ProductVariantProvider/ProductVariantProvider";
+import { ProductImageType } from "@/Types/Types";
 
 export default function ImageGallery({
     images,
 }: {
-    images: { url: string }[];
+    images: ProductImageType[];
 }) {
     const [api, setApi] = useState<CarouselApi>();
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    const { selectedVariant } = useVariant();
 
 
     useEffect(() => {
@@ -26,8 +30,13 @@ export default function ImageGallery({
         api.on("select", () => setCurrentIndex(api.selectedScrollSnap()));
     }, [api]);
 
+    useEffect(() => {
+        const foundImageIndex = images.findIndex((img) => img.variantId === selectedVariant.id);
 
-
+        if(foundImageIndex){
+            api?.scrollTo(foundImageIndex);
+        }
+    }, [selectedVariant, images])
 
 
     return (
