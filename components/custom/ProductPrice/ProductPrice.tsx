@@ -2,15 +2,15 @@
 
 import { useVariant } from "@/Provider/ProductVariantProvider/ProductVariantProvider";
 import { Product } from "@/Types/Types";
+import { calculatePrice } from "@/lib/calculatePrice";
 import { cn } from "@/lib/utils"; // Shadcn utility
 
 interface ProductPriceProps {
   product: Product;
   align?: "left" | "center" | "right";
-  placement?: "card" | "details",
 }
 
-export default function ProductPrice({ product, align = "center", placement = "card" }: ProductPriceProps) {
+export default function ProductPrice({ product, align = "center" }: ProductPriceProps) {
   // Mapping for Flexbox containers (justify-center, justify-start, etc.)
   const justifyMap = {
     left: "justify-start text-left",
@@ -21,23 +21,9 @@ export default function ProductPrice({ product, align = "center", placement = "c
 
   const alignmentClasses = justifyMap[align];
 
-  const hasDiscount = !!product.discountType;
-  const basePrice = placement == "card" ? product.basePrice : selectedVariant.priceOverride ? selectedVariant.priceOverride : product.basePrice;
+  const basePrice = selectedVariant.priceOverride ? selectedVariant.priceOverride : product.basePrice;
 
-  console.log("base price :", basePrice);
-  let price;
-
-  if (hasDiscount) {
-    if (product.discountType == "FLAT") {
-      price = Number(basePrice) - Number(product.discountValue);
-    }
-    else {
-      price = Math.ceil(Number(basePrice) - ((Number(basePrice) / 100) * Number(product.discountValue)));
-    }
-  }
-  else {
-    price = basePrice
-  }
+  const { price, hasDiscount } = calculatePrice(basePrice, product.discountType, product.discountValue)
 
 
   return (

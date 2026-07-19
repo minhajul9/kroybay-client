@@ -6,6 +6,7 @@ import Image from 'next/image';
 import ProductPrice from '@/components/custom/ProductPrice/ProductPrice';
 import { Button } from '@/components/ui/button';
 import { ProductVariantProvider } from '@/Provider/ProductVariantProvider/ProductVariantProvider';
+import VariantSelection from '../VariantSelection';
 
 const ProductDetails = async ({ params }: { params: Promise<{ slug: string }>; }) => {
 
@@ -54,19 +55,7 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }>; }
             <span className="font-semibold">{product.category.title}</span>
           </h2>
 
-          {product.totalStock > 0 ? (
-            <p className="text-green-700 font-semibold text-lg">In Stock</p>
-          ) : (
-            <p className="text-red-700 font-semibold text-lg">Out Of Stock</p>
-          )}
-
-          <ProductPrice product={product} align="left" placement='details' />
-
-          <div>
-            {
-              product.variants.map((variant) => <Button variant={'outline'} key={variant.id}>{variant.sku}</Button>)
-            }
-          </div>
+          <VariantSelection product= {product} />
 
           {/* <HandleAddToCart id={product.id} slug={product.slug} /> */}
         </div>
