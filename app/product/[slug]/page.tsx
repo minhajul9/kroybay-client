@@ -7,6 +7,7 @@ import ProductPrice from '@/components/custom/ProductPrice/ProductPrice';
 import { Button } from '@/components/ui/button';
 import { ProductVariantProvider } from '@/Provider/ProductVariantProvider/ProductVariantProvider';
 import VariantSelection from '../VariantSelection';
+import { Separator } from '@/components/ui/separator';
 
 const ProductDetails = async ({ params }: { params: Promise<{ slug: string }>; }) => {
 
@@ -21,7 +22,7 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }>; }
 
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 items-center gap-10 container mx-auto mb-16 mt-10">
+    <div className="grid grid-cols-1 lg:grid-cols-3 items-center gap-12 container mx-2 lg:mx-auto mb-16 mt-10">
 
       <ProductVariantProvider
         product={product}
@@ -60,13 +61,16 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }>; }
           {/* <HandleAddToCart id={product.id} slug={product.slug} /> */}
         </div>
       </ProductVariantProvider>
+        <Separator className="col-span-full mt-2" />
 
-      <div className="my-10">
+      <div className="my-5 col-span-full">
+
         <h2 className="text-2xl font-semibold mb-4">Description</h2>
         <div
           className="tiptap"
           dangerouslySetInnerHTML={{ __html: product.description }}
         />
+        
       </div>
     </div>
   )

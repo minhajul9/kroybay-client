@@ -1,14 +1,17 @@
 "use client"
 
 import ProductPrice from '@/components/custom/ProductPrice/ProductPrice'
+import { QuantitySelector } from '@/components/custom/QuantitySelector/QuantitySelector'
 import { Button } from '@/components/ui/button'
 import { useVariant } from '@/Provider/ProductVariantProvider/ProductVariantProvider'
 import { Product } from '@/Types/Types'
 import { ShoppingCartIcon } from 'lucide-react'
+import { useState } from 'react'
 
 const VariantSelection = ({ product }: { product: Product }) => {
 
     const { selectedVariant, setSelectedVariant } = useVariant();
+    const [quantity, setQuantity] = useState(1);
 
 
     return (
@@ -31,6 +34,10 @@ const VariantSelection = ({ product }: { product: Product }) => {
                         onClick={() => setSelectedVariant(variant)}
                     >{variant.sku}</Button>)
                 }
+            </div>
+
+            <div>
+                <QuantitySelector onChange={setQuantity} value={quantity}  />
             </div>
 
 
