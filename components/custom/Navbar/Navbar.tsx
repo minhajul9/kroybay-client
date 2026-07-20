@@ -29,6 +29,7 @@ import { useContext } from "react";
 import { DataContext } from "@/Provider/DataProvider/DataProvider";
 import Navbarcollapse from "./NavbarCollaps";
 import { cn } from "@/lib/utils";
+import CartInfo from "../CartInfo/CartInfo";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -205,9 +206,11 @@ export default function Navbar() {
 
           {/* search cart login user */}
           <div className="flex items-center gap-2 md:gap-3">
+
+
             <SearchBar />
 
-            {/* <CartInfo className="hidden md:block p-[3px] px-1 hover:text-red-500  border border-slate-300 hover:border-red-500 group rounded-sm" /> */}
+            <CartInfo className="hidden md:block p-[3px] px-1 hover:text-red-500  border border-slate-300 hover:border-red-500 group rounded-sm" />
 
             {auth?.user ? (
               <NavUser />

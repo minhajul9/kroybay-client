@@ -1,5 +1,6 @@
 "use client"
 
+import AddToCart from '@/components/custom/AddToCart/AddToCart'
 import ProductPrice from '@/components/custom/ProductPrice/ProductPrice'
 import { QuantitySelector } from '@/components/custom/QuantitySelector/QuantitySelector'
 import { Button } from '@/components/ui/button'
@@ -41,13 +42,7 @@ const VariantSelection = ({ product }: { product: Product }) => {
             </div>
 
 
-            <Button
-                size="lg"
-                className="group relative h-12 overflow-hidden rounded-xl bg-gradient-to-r from-red-600 to-red-700 px-6 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-red-700 hover:to-red-800 hover:shadow-xl active:scale-95"
-            >
-                <ShoppingCartIcon className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                Add to Cart
-            </Button>
+            <AddToCart quantity={quantity} successResponse={() => setQuantity(1)} productId={product.id} variantId={selectedVariant.id} slug={product.slug} />
         </div>
     )
 }

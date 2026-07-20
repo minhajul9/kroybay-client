@@ -20,7 +20,7 @@ export function NavbarDrawer({ navItems }: { navItems: NavItemType[] }) {
   return (
     <Sheet>
       <SheetTrigger render={<Button variant="link" size="icon" />}>
-        <Menu strokeWidth={5.5} size={36} color="white" />
+        <Menu strokeWidth={5.5} size={36} color="gray" />
       </SheetTrigger>
 
       <SheetContent side="left" className="px-4">
