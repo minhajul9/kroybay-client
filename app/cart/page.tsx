@@ -1,0 +1,322 @@
+"use client";
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { useCartInfo } from "@/hooks/useCartInfo";
+import {
+  CartItemType,
+} from "@/Types/ComponentTypes";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import ProductItemBox from "./components/ProductItemBox";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useAuth from "@/hooks/useAuth";
+import { Input } from "@/components/ui/input";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useRouter } from "next/navigation";
+import { LoadingOverlay } from "@/components/custom/LoadingOverlay/LoadingOverlay";
+import { queryClient } from "@/Provider/ReactQueryClientProvider";
+import AuthCheck from "@/components/custom/AuthCheck/AuthCheck";
+import { orderInfoSchema, OrderInfoSchema } from "@/validators/orderInfo.validation";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+
+const Cart = () => {
+  const { data: cartInfo } = useCartInfo();
+
+  const [productOpen, setProductOpen] = useState(true);
+
+  const products = useMemo(() => cartInfo?.items ?? [], [cartInfo]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const isCartEmpty =
+    products.length <= 0;
+
+  const axiosPrivate = useAxiosPrivate();
+  const router = useRouter();
+
+  const { auth } = useAuth();
+
+  const form = useForm<OrderInfoSchema>({
+    resolver: zodResolver(orderInfoSchema),
+    defaultValues: {
+      phone: auth.user?.phone || "",
+      address: auth?.user?.address || "",
+      thana: auth?.user?.thana || "",
+      district: auth?.user?.district || "",
+    },
+  });
+
+  const submitOrder = async (data: OrderInfoSchema) => {
+    const res = await axiosPrivate.post(`/orders`, data);
+    return res;
+  };
+
+  const { mutate: handleOrder, isPending } = useMutation({
+    mutationKey: ["confirmOrder"],
+    mutationFn: submitOrder,
+    onSuccess: () => {
+      toast.success("Order submitted", { position: "bottom-right" });
+      queryClient.invalidateQueries({ queryKey: ["cartInfo"] });
+
+      router.push("/orders");
+    },
+    onError: (error: { response: { data: { message: string } } }) => {
+      const errorMessage =
+        error?.response?.data?.message || "An unexpected error occurred";
+      toast.error(errorMessage, { position: "bottom-right" });
+      console.error("Update failed:", error);
+    },
+  });
+
+  // ✅ Calculate derived values without setState in render
+  const { totalPrice, allProductHasPrice } = useMemo(() => {
+    let total = 0;
+    let allHasPrice = true;
+
+    for (const productItem of products) {
+      const { product, quantity } = productItem;
+      const { price, discount, expiresAt } = product;
+
+      if (!price) {
+        allHasPrice = false;
+        continue;
+      }
+
+      const isDiscountValid = expiresAt && new Date() < new Date(expiresAt);
+      const effectivePrice = isDiscountValid ? price - discount : price;
+
+      total += Number(effectivePrice) * quantity;
+    }
+
+    return { totalPrice: total, allProductHasPrice: allHasPrice };
+  }, [products]);
+
+  return (
+    <AuthCheck className="container mx-auto min-h-screen py-6">
+      <LoadingOverlay visible={isPending} blur />
+
+      <div>
+        <h1 className="text-2xl font-bold p-2">Your Cart</h1>
+      </div>
+
+      <div className="lg:grid grid-cols-4 gap-2">
+        {/* no item added card */}
+        <div className="col-span-3">
+          {isCartEmpty && (
+            <div className="col-span-3">
+              <p className="text-xl border px-6 py-4 w-full text-left rounded-md bg-muted mt-2">
+                Your cart is empty
+              </p>
+            </div>
+          )}
+
+          {/* product */}
+          {products.length > 0 && (
+            <Collapsible
+              open={productOpen}
+              onOpenChange={setProductOpen}
+              className="border px-6 py-4 w-full text-left rounded-sm bg-muted mt-6"
+            >
+              <CollapsibleTrigger className="w-full text-xl font-semibold flex justify-between mb-2">
+                <p>{`Products (${products?.length})`}</p>
+                {productOpen ? (
+                  <ChevronUp strokeWidth={2.5} />
+                ) : (
+                  <ChevronDown strokeWidth={2.5} />
+                )}
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                {products.map((productItem: CartItemType) => (
+                  <ProductItemBox
+                    key={productItem.id}
+                    product={productItem}
+                    isLoading={isLoading}
+                    setIsLoading={setIsLoading}
+                  />
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
+          )}
+
+
+          {/* address form */}
+          <div className="p-4 border my-6 rounded-md">
+            <p className="my-4 font-bold">Address details</p>
+
+            <form
+              id="order-address"
+              onSubmit={form.handleSubmit(
+                (data) => handleOrder(data),
+                (errors) => {
+                  const firstErrorField = Object.keys(errors)[0];
+                  if (firstErrorField) {
+                    const element = document.querySelector<HTMLInputElement>(
+                      `[name="${firstErrorField}"]`
+                    );
+                    element?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    });
+                    element?.focus();
+                  }
+                }
+              )}
+              className="grid md:grid-cols-2 gap-3"
+            >
+              {/* <FieldGroup> */}
+                <Controller
+                  name="phone"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
+
+                      <Input
+                        {...field}
+                        id="phone"
+                        type="text"
+                        placeholder="Phone Number"
+                        autoComplete="tel"
+                        aria-invalid={fieldState.invalid}
+                      />
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="district"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="district">District</FieldLabel>
+
+                      <Input
+                        {...field}
+                        id="district"
+                        type="text"
+                        placeholder="District"
+                        aria-invalid={fieldState.invalid}
+                      />
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="thana"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="thana">Thana</FieldLabel>
+
+                      <Input
+                        {...field}
+                        id="thana"
+                        type="text"
+                        placeholder="Thana"
+                        aria-invalid={fieldState.invalid}
+                      />
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="address"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="address">Address</FieldLabel>
+
+                      <Input
+                        {...field}
+                        id="address"
+                        type="text"
+                        placeholder="Address"
+                        autoComplete="street-address"
+                        aria-invalid={fieldState.invalid}
+                      />
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              {/* </FieldGroup> */}
+            </form>
+
+          </div>
+        </div>
+
+        {/* order summary */}
+        <div>
+          <div className="min-h-96 border-2 mt-4 p-4 rounded-md text-sm">
+            <p className="text-xl font-semibold mb-4">Order Summary</p>
+
+            <p className="flex justify-between items-center">
+              <span>{`Products (${products.length})`}</span>
+
+              {allProductHasPrice ? (
+                <span className="flex items-center gap-1">
+                  <Image
+                    src="/taka.png"
+                    alt="Taka symbol"
+                    width={15}
+                    height={15}
+                  />
+                  {totalPrice}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Quote Required</span>
+              )}
+            </p>
+
+            <div className="border-t-2 my-2"></div>
+
+            <p className="flex justify-between items-center">
+              <span>Total</span>
+
+
+            </p>
+
+            <Button
+              className="w-full mt-5"
+              type="submit"
+              form="order-address"
+              disabled={isPending || isCartEmpty}
+            >
+              {isPending ? "Confirming..." : "Confirm Order"}
+            </Button>
+
+            <div className="mt-6 p-3 border rounded-md text-muted-foreground text-sm">
+              We will contact you within{" "}
+              <span className="font-semibold">24 to 48 hours</span> regarding
+              your order details and confirmation.
+            </div>
+          </div>
+        </div>
+      </div>
+    </AuthCheck>
+  );
+};
+
+export default Cart;

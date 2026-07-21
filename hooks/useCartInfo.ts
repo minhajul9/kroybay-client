@@ -10,7 +10,7 @@ export const useCartInfo = () => {
         queryKey: ["cartInfo"], // make it per-user
         queryFn: async () => {
             const res = await axiosPrivate.get("/cart");
-            console.log("Cart Info from hook: ",res);
+            console.log("Cart Info from : ",res);
             return res.data.data;
         },
         enabled: !!auth?.user,
