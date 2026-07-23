@@ -64,7 +64,7 @@ const ProductItemBox = ({
 
   // 1. Replaced 'any' with AxiosResponse for standard API return
   const removeItem = async (): Promise<AxiosResponse> => {
-    const res = await axiosPrivate.delete(`/cart/product/${product.id}`);
+    const res = await axiosPrivate.delete(`/cart/${cartId}/item/${product.id}`);
     return res;
   };
 
@@ -132,6 +132,8 @@ const ProductItemBox = ({
   const finalPrice: number | null = product?.product?.basePrice;
 
 
+  console.log("Getting value: ", product.variant);
+
   return (
     <div className="text-wrap p-3 px-2.5 border rounded-sm flex flex-col md:flex-row md:items-center gap-3 w-full bg-white shadow-sm mb-1">
 
@@ -150,7 +152,7 @@ const ProductItemBox = ({
           <div className="mx-2">
             <h2 className="text-lg font-semibold">{product.product.name}</h2>
 
-            <p className="text-sm mt-1 flex gap-3 items-center text-gray-500">
+            <div className="text-sm mt-1 flex gap-3 items-center text-gray-500">
               <p>
                 <span className="bangla-font font-bold">
                   Brand:{" "}
@@ -159,7 +161,18 @@ const ProductItemBox = ({
                   {product.product.brand?.name || "No Brand"}
                 </span>
               </p>
-            </p>
+              
+              {
+                product.variant.options.map(option => <p key={option.id}>
+                <span className="bangla-font font-bold">
+                  {option.optionValue.optionType.name}:{" "}
+                </span>
+                <span className="bangla-font">
+                  {option.optionValue.value || "No Brand"}
+                </span>
+              </p>)
+              }
+            </div>
           </div>
         </div>
 

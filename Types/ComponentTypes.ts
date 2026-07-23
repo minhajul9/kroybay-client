@@ -1,4 +1,4 @@
-import { Product, ProductVariantType } from "./Types";
+import { Product, ProductImageType, ProductVariantType } from "./Types";
 
 export type NavItemType = {
     label: string;
@@ -16,6 +16,23 @@ export type CartItemType = {
     productId: string;
     quantity: number;
     updatedAt: string;
-    variant: ProductVariantType
+    variant: CartVariantType
     variantId: string;
+}
+
+
+export type CartVariantType = {
+    weight: number;
+    stock: number;
+    sku: string;
+    images: ProductImageType[];
+    options: {
+        id: string;
+        optionValue: {
+            hexcolor?: string;
+            optionType: { name: string }
+            optionTypeId: string;
+            value: string;
+        }
+    }[]
 }
