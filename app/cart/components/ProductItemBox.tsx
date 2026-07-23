@@ -38,6 +38,7 @@ interface ProductItemBoxProps {
   product: CartItemType;
   isLoading: boolean;
   setIsLoading: (st: boolean) => void;
+  cartId: string;
 }
 
 // --- COMPONENT DEFINITION ---
@@ -45,17 +46,17 @@ const ProductItemBox = ({
   product,
   isLoading,
   setIsLoading,
+  cartId
 }: ProductItemBoxProps) => {
 
 
-  const [count, setCount] = useState<number>(product.quantity);
   const axiosPrivate = useAxiosPrivate();
   const [quantity, setQuantity] = useState(product.quantity);
 
   const updateCart = async (newQuantity: number): Promise<number> => {
     console.log("API CALL: updating cart to quantity", newQuantity);
 
-    await axiosPrivate.put(`/cart/product/${product.id}`, {
+    await axiosPrivate.put(`/cart/${cartId}/item/${product.id}`, {
       quantity: newQuantity,
     });
     return newQuantity;
@@ -80,7 +81,7 @@ const ProductItemBox = ({
       mutationKey: ["updateCart"],
       mutationFn: updateCart,
       onSuccess: (newQuantity: number) => {
-        setCount(newQuantity);
+        setQuantity(newQuantity);
         queryClient.invalidateQueries({ queryKey: ["cartInfo"] });
         setIsLoading(false);
       },
@@ -124,7 +125,7 @@ const ProductItemBox = ({
 
 
   const handleCountChange = (newValue: number): void => {
-    setCount(newValue);
+    setQuantity(newValue);
     debouncedUpdateCart(newValue);
   };
 
@@ -176,7 +177,7 @@ const ProductItemBox = ({
         {/* Remove Button — push to bottom-left on mobile */}
 
 
-        <QuantitySelector onChange={setQuantity} value={quantity} />
+        <QuantitySelector onChange={handleCountChange} value={quantity} />
       </section>
     </div>
   );

@@ -99,6 +99,8 @@ const Cart = () => {
     return { totalPrice: total, allProductHasPrice: allHasPrice };
   }, [products]);
 
+  console.log(cartInfo);
+
   return (
     <AuthCheck className="container mx-auto min-h-screen py-6">
       <LoadingOverlay visible={isPending} blur />
@@ -140,6 +142,7 @@ const Cart = () => {
                     product={productItem}
                     isLoading={isLoading}
                     setIsLoading={setIsLoading}
+                    cartId={cartInfo.id}
                   />
                 ))}
               </CollapsibleContent>
